@@ -162,7 +162,7 @@ Il pivoting è una tecnica avanzata per attraversare segmenti di rete separati d
 Questa tecnica dimostra l'uso di un sistema compromesso per ottenere l'accesso ad altre aree della rete.
 
 **Passaggi:**
-1. Accedi al container FTP:
+1. Accedi al container FTP (oppure, più realisticamente, puoi farlo dalla sessione Metasploit ottenuta in precedenza sfruttando il servizio vulnerabile vsftpd-2.3.4 legato al protocollo FTP):
    ```bash
    docker exec -it ftp.euxcorp.com /bin/bash
    ```
