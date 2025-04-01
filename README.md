@@ -86,30 +86,10 @@ make deploy
 make test
 ```
 
-## Accesso ai Servizi
-- SSH Honeypot:
-```
-ssh admin@localhost -p 2222
-```
-- MySQL:
-```
-mysql -h 172.16.10.60 -u root -p
-```
-
 ## Monitoraggio dei Log
 I log di ogni container sono accessibili con il comando:
 ```
 docker logs nome-container
-```
-
-## Backup e Ripristino
-Per eseguire un backup dei dati:
-```
-tar czvf backup.tar.gz ./data
-```
-Per ripristinare:
-```
-tar xzvf backup.tar.gz -C ./data
 ```
 
 ## Risoluzione dei Problemi
