@@ -1,0 +1,82 @@
+services:
+  attacker:
+    image: metasploitframework/metasploit-framework:latest
+    container_name: metasploit
+    networks:
+      public_net:
+        ipv4_address: 172.16.10.20
+    command: ["sleep", "infinity"]
+
+  ftp.euxcorp.com:
+    image: clintmint/vsftpd-2.3.4:1.0
+    container_name: ftp
+    networks:
+      public_net:
+        ipv4_address: 172.16.10.30
+      private_net:
+        ipv4_address: 10.1.0.11
+    command: sh -c "start-vsftpd && tail -f /dev/null"
+
+  public.euxcorp.com:
+    image: cowrie/cowrie
+    container_name: ssh-honeypot
+    networks:
+      public_net:
+        ipv4_address: 172.16.10.40
+    ports:
+      - "2222:2222"
+    environment:
+      COWRIE_USER: admin
+      COWRIE_PASS: admin
+
+  access.euxcorp.com:
+    image: rastasheep/ubuntu-sshd:latest
+    container_name: ssh-allow-root
+    networks:
+      private_net:
+        ipv4_address: 10.1.0.13
+    environment:
+      - SSH_PASSWORD=password
+    command: /usr/sbin/sshd -D
+    expose:
+      - "22"
+
+  attacker-private:
+    image: metasploitframework/metasploit-framework:latest
+    container_name: metasploit-private
+    networks:
+      private_net:
+        ipv4_address: 10.1.0.15
+    command: ["sleep", "infinity"]
+
+  mysql.euxcorp.com:
+    image: vulhub/mysql:5.5.23
+    container_name: mysql
+    networks:
+      public_net:
+        ipv4_address: 172.16.10.60
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+
+  web.euxcorp.com:
+    image: vulhub/uwsgi-php:2.0.16
+    container_name: web
+    networks:
+      private_net:
+        ipv4_address: 10.1.0.17
+    expose:
+      - "8080"
+
+networks:
+  public_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.10.0/24
+  private_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.1.0.0/24
