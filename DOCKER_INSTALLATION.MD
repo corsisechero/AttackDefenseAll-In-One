@@ -1,13 +1,9 @@
 ```markdown
 # Installazione di Docker e Docker Compose su Linux
 
-## Aggiornamento dei pacchetti
-```
-sudo apt update
-```
-
 ## Installazione di Docker
 ```bash
+sudo apt update
 sudo apt install -y docker.io
 ```
 
