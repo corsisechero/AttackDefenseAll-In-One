@@ -1,7 +1,7 @@
 services:
   attacker:
     image: metasploitframework/metasploit-framework:latest
-    container_name: metasploit
+    container_name: attacker.euxcorp.com
     networks:
       public_net:
         ipv4_address: 172.16.10.20
@@ -9,7 +9,7 @@ services:
 
   ftp.euxcorp.com:
     image: clintmint/vsftpd-2.3.4:1.0
-    container_name: ftp
+    container_name: ftp.euxcorp.com
     networks:
       public_net:
         ipv4_address: 172.16.10.30
@@ -19,7 +19,7 @@ services:
 
   public.euxcorp.com:
     image: cowrie/cowrie
-    container_name: ssh-honeypot
+    container_name: public.euxcorp.com
     networks:
       public_net:
         ipv4_address: 172.16.10.40
@@ -31,7 +31,7 @@ services:
 
   access.euxcorp.com:
     image: rastasheep/ubuntu-sshd:latest
-    container_name: ssh-allow-root
+    container_name: access.euxcorp.com
     networks:
       private_net:
         ipv4_address: 10.1.0.13
@@ -43,7 +43,7 @@ services:
 
   attacker-private:
     image: metasploitframework/metasploit-framework:latest
-    container_name: metasploit-private
+    container_name: attacker-private.euxcorp.com
     networks:
       private_net:
         ipv4_address: 10.1.0.15
@@ -51,7 +51,7 @@ services:
 
   mysql.euxcorp.com:
     image: vulhub/mysql:5.5.23
-    container_name: mysql
+    container_name: mysql.euxcorp.com
     networks:
       public_net:
         ipv4_address: 172.16.10.60
@@ -62,7 +62,7 @@ services:
 
   web.euxcorp.com:
     image: vulhub/uwsgi-php:2.0.16
-    container_name: web
+    container_name: web.euxcorp.com
     networks:
       private_net:
         ipv4_address: 10.1.0.17
