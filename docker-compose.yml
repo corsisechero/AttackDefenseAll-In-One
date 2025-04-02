@@ -1,7 +1,7 @@
 services:
   attacker:
     image: metasploitframework/metasploit-framework:latest
-    container_name: attacker.euxcorp.com
+    container_name: attacker
     networks:
       public_net:
         ipv4_address: 172.16.10.20
@@ -43,7 +43,7 @@ services:
 
   attacker-private:
     image: metasploitframework/metasploit-framework:latest
-    container_name: attacker-private.euxcorp.com
+    container_name: attacker-private
     networks:
       private_net:
         ipv4_address: 10.1.0.15
