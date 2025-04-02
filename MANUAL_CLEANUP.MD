@@ -1,5 +1,3 @@
-Ecco il testo in formato Markdown per GitHub:
-
 # Docker Cleanup Commands
 
 Questi comandi Docker consentono di fermare, rimuovere container, immagini, volumi, reti e liberare spazio sul sistema.
