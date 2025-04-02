@@ -1,4 +1,3 @@
-### Codice per `README.md`
 ## Diagramma dei Servizi
 
 ```
