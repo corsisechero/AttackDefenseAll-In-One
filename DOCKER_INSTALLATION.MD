@@ -1,5 +1,3 @@
-Ecco il testo in formato Markdown per GitHub:
-
 ```markdown
 # Installazione di Docker e Docker Compose su Linux
 
