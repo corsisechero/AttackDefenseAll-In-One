@@ -2,7 +2,7 @@
 # Installazione di Docker e Docker Compose su Linux
 
 ## Aggiornamento dei pacchetti
-```bash
+```
 sudo apt update
 ```
 
