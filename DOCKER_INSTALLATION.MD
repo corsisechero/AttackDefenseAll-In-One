@@ -46,5 +46,3 @@ chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 docker compose version
 ```
 ```
-
-Fammi sapere se hai bisogno di ulteriori modifiche o aggiunte!
