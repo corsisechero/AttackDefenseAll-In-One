@@ -74,8 +74,8 @@ Il laboratorio è suddiviso in due reti Docker:
 ## Avvio del Laboratorio
 1. Clonare il repository:
 ```
-git clone https://github.com/tuo-utente/laboratorio-cybersecurity.git
-cd laboratorio-cybersecurity
+git clone https://github.com/corsisechero/AttackDefenseAll-In-One.git
+cd AttackDefenseAll-In-One
 ```
 2. Avviare il laboratorio:
 ```
