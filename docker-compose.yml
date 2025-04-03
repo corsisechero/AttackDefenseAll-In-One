@@ -1,4 +1,15 @@
 services:
+  postgres:
+    image: vulhub/postgres:10.7
+    container_name: postgres.euxcorp.com
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      public_net:
+        ipv4_address: 172.16.10.70
+
   attacker:
     image: metasploitframework/metasploit-framework:latest
     container_name: attacker
@@ -6,6 +17,32 @@ services:
       public_net:
         ipv4_address: 172.16.10.20
     command: ["sleep", "infinity"]
+
+  apache:
+    image: vulhub/unomi:1.5.1
+    container_name: apache.euxcorp.com
+    ports:
+      - "9443:9443"
+      - "8181:8181"
+    environment:
+      - UNOMI_ELASTICSEARCH_ADDRESSES=apache-elasticsearch:9200
+    depends_on:
+      - apache-elasticsearch
+    networks:
+      private_net:
+        ipv4_address: 10.1.0.18
+
+  apache-elasticsearch:
+    image: elasticsearch:7.9.3
+    container_name: apache-elasticsearch.euxcorp.com
+    environment:
+      - cluster.name=contextElasticSearch
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - bootstrap.memory_lock=true
+    networks:
+      private_net:
+        ipv4_address: 10.1.0.19
 
   ftp.euxcorp.com:
     image: clintmint/vsftpd-2.3.4:1.0
@@ -80,4 +117,3 @@ networks:
     ipam:
       config:
         - subnet: 10.1.0.0/24
-
